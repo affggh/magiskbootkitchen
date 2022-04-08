@@ -44,7 +44,7 @@ main() {
     echo Extracting file "$1" at current dir...
     # cleanup before unpack
     magiskboot cleanup 2>&1
-    magiskboot -h unpack "$1" 2>&1
+    magiskboot unpack -h "$1" 2>&1
     echo -e "Img Type : "
     if [ "$?" = "0" ]; then
     echo "Valid"
