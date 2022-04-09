@@ -2,6 +2,11 @@
 
 . "$(dirname $0)/bin/archdetect.sh"
 
+if [ "$(osarch)" = "Unknow" ]; then
+  echo "Arch $(uname -m) does not support on this script ..."
+  exit 1
+fi
+
 LOCALDIR=`pwd`
 BINPATH="$(realpath $(dirname $0)/bin/$(ostype)/$(osarch))"
 PATH="${BINPATH}:${PATH}"
