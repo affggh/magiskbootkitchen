@@ -9,9 +9,8 @@ PATH="${BINPATH}:${PATH}"
 cpio="$(realpath ${BINPATH})/cpio"
 
 if [ "$OS" = "Windows_NT" ]; then
-  sudo="cygstart --atcion=runas"
-else
-  sudo="sudo"
+  alias sudo=""
+  alias find="$(realpath ${BINPATH})/find"
 fi
 
 Detials() {
@@ -45,7 +44,7 @@ main() {
     cd "${dirpath}/ramdisk"
 	# prefix some issues
 	#if [ -d "./ramdisk/.backup" ]; then chmod -R 0755 "./ramdisk/.backup";fi
-	"${sudo}" find | "${sudo}" "${cpio}" -H newc -ov > "${dirpath}/ramdisk.cpio"
+	sudo find | sudo "${cpio}" -H newc -ov > "${dirpath}/ramdisk.cpio"
 	cd "${dirpath}"
 	magiskboot repack "$1"
   fi

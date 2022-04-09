@@ -11,11 +11,7 @@ echo $PATH
 cpio="$(realpath ${BINPATH})/cpio"
 
 if [ "$OS" = "Windows_NT" ]; then
-  sudo="cygstart"
-  sudoarg="--action=runas"
-else
-  sudo="sudo"
-  sudoarg=""
+  alias sudo=""
 fi
 
 Detials() {
@@ -62,7 +58,7 @@ main() {
     if [ -d "ramdisk" ]; then rm -rf ramdisk ;fi
     echo "Extracting ramdisk folder..."
     mkdir "ramdisk" && cd "ramdisk"
-    ${sudo} ${sudoarg} "${cpio}" -iv -I "${ramdiskpath}"
+    magiskboot cpio "${ramdiskpath}" extract 2>&1
 	if [ -d ".backup" ]; then "${sudo}" chmod -R 0755 ".backup";fi
     cd "${LOCALDIR}"
   fi
