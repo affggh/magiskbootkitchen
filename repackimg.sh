@@ -13,6 +13,15 @@ if [ "$OS" = "Windows_NT" ]; then
   alias find="$(realpath ${BINPATH})/find"
 fi
 
+# on Android device the Var "$OSTYPE"=""
+if [ "$OSTYPE" = "" ]; then
+  if [ ! "$(whoami)" = "root" ]; then
+    echo Script need run on root ...
+	exit 1
+  fi
+  alias sudo=""
+fi
+
 Detials() {
   echo "Based on magiskboot and cpio"
   echo "Script by affggh"
