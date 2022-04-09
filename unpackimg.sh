@@ -3,7 +3,7 @@
 . "$(dirname $0)/bin/archdetect.sh"
 
 LOCALDIR=`pwd`
-BINPATH="$(dirname $0)/bin/$(ostype)/$(osarch)"
+BINPATH="$(realpath $(dirname $0)/bin/$(ostype)/$(osarch))"
 PATH="${BINPATH}:${PATH}"
 
 echo $PATH
