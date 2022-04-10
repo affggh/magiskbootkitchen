@@ -17,9 +17,8 @@ cpio="$(realpath ${BINPATH})/cpio"
 
 if [ "$OS" = "Windows_NT" ]; then
   alias sudo=""
-fi
 # on Android device the Var "$OSTYPE"=""
-if [ "$OSTYPE" = "" ]; then
+elif [ "$OSTYPE" = "" ]; then
   if [ ! "$(whoami)" = "root" ]; then
     echo Script need run on root ...
 	exit 1

@@ -12,7 +12,7 @@ BINPATH="$(realpath $(dirname $0)/bin/$(ostype)/$(osarch))"
 PATH="${BINPATH}:${PATH}"
 
 # on Android device the Var "$OSTYPE"=""
-if [ "$OSTYPE" = "" ]; then
+if [ "$OSTYPE" = "" ] && [ ! "$OS" = "Windows_NT" ]; then
   if [ ! "$(whoami)" = "root" ]; then
     echo Script need run on root ...
 	exit 1
