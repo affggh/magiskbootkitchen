@@ -15,6 +15,7 @@ cpio="$(realpath ${BINPATH})/cpio"
 
 if [ "$OS" = "Windows_NT" ]; then
   alias sudo=""
+  alias find="$(realpath ${BINPATH})/find"
 # on Android device the Var "$OSTYPE"=""
 elif [ "$OSTYPE" = "" ]; then
   if [ ! "$(whoami)" = "root" ]; then
