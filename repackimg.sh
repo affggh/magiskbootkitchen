@@ -52,8 +52,8 @@ vendorbootWarning() {
 main() {
   if [ "$1" = "" ] ;then Usage && exit 0 ;fi
   if [ "$1" = "-h" ] ;then  Usage && exit 0 ;fi
-  
-  if [ ! -f "$1" ]; then echo "File not exist..." && exit 0;else imgpath="$(realpath $1)";fi
+  imgpath="$(realpath $1)
+  if [ ! -f "$imgpath" ]; then echo "File not exist..." && exit 0;fi
   if [ -d "$2" ]; then dirpath="$(realpath $2)" ;fi
   echo ${dirpath}
   cd "${dirpath}"
