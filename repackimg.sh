@@ -53,12 +53,12 @@ main() {
   if [ "$1" = "" ] ;then Usage && exit 0 ;fi
   if [ "$1" = "-h" ] ;then  Usage && exit 0 ;fi
   
-  if [ ! -f "$1" ]; then echo "File not exist..." && exit 0;fi
+  if [ ! -f "$1" ]; then echo "File not exist..." && exit 0;else imgpath="$(realpath $1)";fi
   if [ -d "$2" ]; then dirpath="$(realpath $2)" ;fi
   echo ${dirpath}
   cd "${dirpath}"
   echo "Repacking boot image..."
-  ifvndrboot "$1" && vendorbootWarning && vendorboot=1
+  ifvndrboot "$imgpath" && vendorbootWarning && vendorboot=1
   echo "Repacking ramdisk..."
   if [ -d "${dirpath}/ramdisk" ]; then
 	rm -f "ramdisk.cpio"
@@ -71,14 +71,13 @@ main() {
     if [ -f 'ramdisk_compress_type' ]; then
 	  r_fmt="$(cat 'ramdisk_compress_type')"
 	  if [ ! "$r_fmt" = "raw" ]; then
-	    echo "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
 	    magiskboot compress=$r_fmt "ramdisk.cpio" "ramdisk.cpio.comp"
 		rm -f "ramdisk.cpio"
 		mv "ramdisk.cpio.comp" "ramdisk.cpio"
 	  fi
 	fi
   fi
-	magiskboot repack "$1"
+	magiskboot repack "$imgpath"
   fi
 }
 
