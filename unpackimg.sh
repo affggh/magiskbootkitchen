@@ -11,9 +11,9 @@ LOCALDIR=`pwd`
 BINPATH="$(realpath $(dirname $0)/bin/$(ostype)/$(osarch))"
 PATH="${BINPATH}:${PATH}"
 
-echo $PATH
-
-cpio="$(realpath ${BINPATH})/cpio"
+# cpio="$(realpath ${BINPATH})/cpio" use on repack
+alias ifvndrboot="$(realpath ${BINPATH})/ifvndrboot"
+alias format="$(realpath ${BINPATH})/format"
 
 if [ "$OS" = "Windows_NT" ]; then
   alias sudo=""
@@ -42,6 +42,11 @@ Usage() {
   echo "        -h  print this usage"
 }
 
+vendorbootWarning() {
+	echo "######################################"
+	echo "Warning : vendor boot image detected..."
+	echo "######################################"
+}
 
 main() {
   if [ "$1" = "" ] ;then Usage && exit 0 ;fi
@@ -50,9 +55,20 @@ main() {
   if [ -f "$1" ] ;then
     Detials
     echo Extracting file "$1" at current dir...
+	ifvndrboot "$1" && vendorbootWarning && vendorboot=1
     # cleanup before unpack
     magiskboot cleanup 2>&1
     magiskboot unpack -h "$1" 2>&1
+	if [ "$vendorboot" = "1" ]; then
+		r_fmt="$(format ./ramdisk.cpio)"
+		echo "Detect cpio format : ${r_fmt}"
+		printf "${r_fmt}" > "ramdisk_compress_type"
+		if [ ! "$r_fmt" = "raw" ]; then
+			magiskboot decompress "ramdisk.cpio" "ramdisk.cpio.dec"
+			rm -f "ramdisk.cpio"
+			mv "ramdisk.cpio.dec" "ramdisk.cpio"
+		fi
+	fi
     echo -e "Img Type : "
     if [ "$?" = "0" ]; then
     echo "Valid"

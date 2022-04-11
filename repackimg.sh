@@ -12,6 +12,8 @@ BINPATH="$(realpath $(dirname $0)/bin/$(ostype)/$(osarch))"
 PATH="${BINPATH}:${PATH}"
 
 cpio="$(realpath ${BINPATH})/cpio"
+alias ifvndrboot="$(realpath ${BINPATH})/ifvndrboot"
+alias format="$(realpath ${BINPATH})/format"
 
 if [ "$OS" = "Windows_NT" ]; then
   alias sudo=""
@@ -41,6 +43,12 @@ Usage() {
   echo "        -h  print this usage"
 }
 
+vendorbootWarning() {
+	echo "######################################"
+	echo "Warning : vendor boot image detected..."
+	echo "######################################"
+}
+
 main() {
   if [ "$1" = "" ] ;then Usage && exit 0 ;fi
   if [ "$1" = "-h" ] ;then  Usage && exit 0 ;fi
@@ -50,14 +58,26 @@ main() {
   echo ${dirpath}
   cd "${dirpath}"
   echo "Repacking boot image..."
+  ifvndrboot "$1" && vendorbootWarning && vendorboot=1
   echo "Repacking ramdisk..."
   if [ -d "${dirpath}/ramdisk" ]; then
 	rm -f "ramdisk.cpio"
     cd "${dirpath}/ramdisk"
 	# prefix some issues
 	#if [ -d "./ramdisk/.backup" ]; then chmod -R 0755 "./ramdisk/.backup";fi
-	sudo find | sudo "${cpio}" -H newc -ov > "${dirpath}/ramdisk.cpio"
+	sudo find | sudo "${cpio}" -H newc -o > "${dirpath}/ramdisk.cpio"
 	cd "${dirpath}"
+  if [ "$vendorboot" = "1" ]; then
+    if [ -f 'ramdisk_compress_type' ]; then
+	  r_fmt="$(cat 'ramdisk_compress_type')"
+	  if [ ! "$r_fmt" = "raw" ]; then
+	    echo "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+	    magiskboot compress=$r_fmt "ramdisk.cpio" "ramdisk.cpio.comp"
+		rm -f "ramdisk.cpio"
+		mv "ramdisk.cpio.comp" "ramdisk.cpio"
+	  fi
+	fi
+  fi
 	magiskboot repack "$1"
   fi
 }
