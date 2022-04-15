@@ -1,6 +1,7 @@
 #!/usr/bin/env sh
 
 . "$(dirname $0)/bin/archdetect.sh"
+. "$(dirname $0)/bin/list.sh"
 
 if [ "$(osarch)" = "Unknow" ]; then
   echo "Arch $(uname -m) does not support on this script ..."
@@ -58,6 +59,11 @@ main() {
   echo ${dirpath}
   cd "${dirpath}"
   echo "Repacking boot image..."
+  if [ ! -d "split_img" ]; then
+	echo "Split file does not found..."
+	echo "Please unpack first..."
+	exit 1
+  fi
   ifvndrboot "$1" && vendorbootWarning && vendorboot=1
   echo "Repacking ramdisk..."
   if [ -d "${dirpath}/ramdisk" ]; then
@@ -65,7 +71,7 @@ main() {
     cd "${dirpath}/ramdisk"
 	# prefix some issues
 	#if [ -d "./ramdisk/.backup" ]; then chmod -R 0755 "./ramdisk/.backup";fi
-	sudo find | sudo "${cpio}" -H newc -o > "${dirpath}/ramdisk.cpio"
+	sudo find | sed 1d | sudo "${cpio}" -o > "${dirpath}/split_img/ramdisk.cpio"
 	cd "${dirpath}"
   if [ "$vendorboot" = "1" ]; then
     if [ -f 'ramdisk_compress_type' ]; then
@@ -74,11 +80,20 @@ main() {
 	    echo "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
 	    magiskboot compress=$r_fmt "ramdisk.cpio" "ramdisk.cpio.comp"
 		rm -f "ramdisk.cpio"
-		mv "ramdisk.cpio.comp" "ramdisk.cpio"
+		mv "ramdisk.cpio.comp" "split_img/ramdisk.cpio"
 	  fi
 	fi
   fi
-	magiskboot repack "$1"
+    if [ -d "split_img" ]; then
+		for i in $split_img
+		do
+			if [ -f "split_img/$i" ]; then
+				cp "split_img/$i" "$i"
+			fi
+		done
+	fi
+	magiskboot repack "$1" 2>&1
+	magiskboot cleanup 2>&1
   fi
 }
 

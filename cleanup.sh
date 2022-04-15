@@ -22,6 +22,7 @@ fi
 
 magiskboot cleanup 2>&1
 if [ -d "ramdisk" ]; then rm -rf ramdisk ;fi
+if [ -d "split_img" ]; then rm -rf split_img ;fi
 if [ -f "ramdisk_compress_type" ]; then rm -f "ramdisk_compress_type"; fi
 exit 0
 

@@ -1,6 +1,7 @@
 #!/usr/bin/env sh
 
 . "$(dirname $0)/bin/archdetect.sh"
+. "$(dirname $0)/bin/list.sh"
 
 if [ "$(osarch)" = "Unknow" ]; then
   echo "Arch $(uname -m) does not support on this script ..."
@@ -59,6 +60,18 @@ main() {
     # cleanup before unpack
     magiskboot cleanup 2>&1
     magiskboot unpack -h "$1" 2>&1
+	if [ "$?" = "1" ]; then
+		echo "Unsupport boot image..."
+		exit 1
+	fi
+	if [ -d "split_img" ]; then rm -rf "split_img"; fi
+	mkdir "split_img"
+	for i in $split_img
+	do
+		if [ -f "$i" ]; then
+			mv "$i" "split_img/$i"
+		fi
+	done
 	if [ "$vendorboot" = "1" ]; then
 		r_fmt="$(format ./ramdisk.cpio)"
 		echo "Detect cpio format : ${r_fmt}"
@@ -76,13 +89,13 @@ main() {
     echo "Chromeos"
     else
     echo "Error"
-    exit /b 1
+    exit 1
     fi
   fi
 
-  if [ -f "ramdisk.cpio" ]; then
-    chmod 0755 "ramdisk.cpio"
-    ramdiskpath="$(realpath ./ramdisk.cpio)"
+  if [ -f "split_img/ramdisk.cpio" ]; then
+    chmod 0755 "split_img/ramdisk.cpio"
+    ramdiskpath="$(realpath ./split_img/ramdisk.cpio)"
     if [ -d "ramdisk" ]; then rm -rf ramdisk ;fi
     echo "Extracting ramdisk folder..."
     mkdir "ramdisk" && cd "ramdisk"
