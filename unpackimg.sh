@@ -12,7 +12,7 @@ LOCALDIR=`pwd`
 BINPATH="$(realpath $(dirname $0)/bin/$(ostype)/$(osarch))"
 PATH="${BINPATH}:${PATH}"
 
-# cpio="$(realpath ${BINPATH})/cpio" use on repack
+cpio="$(realpath ${BINPATH})/cpio"
 alias ifvndrboot="$(realpath ${BINPATH})/ifvndrboot"
 alias format="$(realpath ${BINPATH})/format"
 
@@ -95,11 +95,10 @@ main() {
 
   if [ -f "split_img/ramdisk.cpio" ]; then
     chmod 0755 "split_img/ramdisk.cpio"
-    ramdiskpath="$(realpath ./split_img/ramdisk.cpio)"
     if [ -d "ramdisk" ]; then rm -rf ramdisk ;fi
     echo "Extracting ramdisk folder..."
     mkdir "ramdisk" && cd "ramdisk"
-    magiskboot cpio "${ramdiskpath}" extract 2>&1
+    ${sudo} ${sudoarg} "${cpio}" -iv -I "../split_img/ramdisk.cpio" 2>&1
 	if [ -d ".backup" ]; then "${sudo}" chmod -R 0755 ".backup";fi
     cd "${LOCALDIR}"
   fi
