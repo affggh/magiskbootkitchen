@@ -71,7 +71,7 @@ main() {
     cd "${dirpath}/ramdisk"
 	# prefix some issues
 	#if [ -d "./ramdisk/.backup" ]; then chmod -R 0755 "./ramdisk/.backup";fi
-	sudo find | sed 1d | sudo "${cpio}" -o > "${dirpath}/split_img/ramdisk.cpio"
+	sudo find | sed 1d | sudo "${cpio}" -H newc -R 0:0 -o -F ${dirpath}/split_img/ramdisk.cpio
 	cd "${dirpath}"
   if [ "$vendorboot" = "1" ]; then
     if [ -f 'ramdisk_compress_type' ]; then
